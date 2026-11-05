@@ -19,7 +19,7 @@ The Pages workflow uploads only the static files in `site/`. It does not publish
 4. Copy the client ID into `site/config.js` as `googleClientId`. It is public configuration, not a secret. After deployment, users click **Google ile bağlan** and grant read-only Sheet access. The site holds the short-lived token in memory and sends it only to the Google Sheets API.
 5. Use the refresh button after ChatGPT updates the sheet. The site reads the `Expenses`, `Meals`, `Tasks`, `Health`, `Settings`, and `Inbox` tabs.
 
-GitHub Actions deploys the site when files in `site/` change. The Pages workflow uses `actions/configure-pages`, `actions/upload-pages-artifact`, and `actions/deploy-pages`. The repository is public, so the deployed interface is public; your personal Sheet remains private and requires Google authorization.
+GitHub Pages publishes the `docs/` directory from the `main` branch. The `site/` directory is kept in sync with the published copy. The repository is public, so the interface is public; your personal Sheet remains private and requires Google authorization.
 
 ## Sheet schema
 
