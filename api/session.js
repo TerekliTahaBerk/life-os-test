@@ -1,8 +1,4 @@
-const { json, validSession } = (() => {
-  const lib = require('./_lib');
-  return { ...lib, validSession: undefined };
-})();
-const { env } = require('./_lib');
+const { json, env } = require('./_lib');
 module.exports = function handler(req, res) {
   if (req.method !== 'GET') return json(res, 405, { error: 'Method not allowed' });
   const authenticated = (() => {

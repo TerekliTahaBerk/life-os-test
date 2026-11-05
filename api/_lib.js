@@ -64,7 +64,7 @@ async function sheetRequest(tab, range = 'A1:Z1000', write) {
   const token = await googleToken();
   const encodedRange = encodeURIComponent(`'${tab}'!${range}`);
   const base = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(env('GOOGLE_SHEET_ID'))}/values/${encodedRange}`;
-  const response = await fetch(write ? `${base}?valueInputOption=RAW` : base, { method: write ? 'PUT' : 'GET', headers: { Authorization: `Bearer ${token}`, ...(write ? { 'Content-Type': 'application/json' } : {}) }, ...(write ? { body: JSON.stringify({ values: [[write.value]] }) } : {}) });
+  const response = await fetch(write ? `${base}?valueInputOption=RAW` : `${base}?valueRenderOption=UNFORMATTED_VALUE&dateTimeRenderOption=SERIAL_NUMBER`, { method: write ? 'PUT' : 'GET', headers: { Authorization: `Bearer ${token}`, ...(write ? { 'Content-Type': 'application/json' } : {}) }, ...(write ? { body: JSON.stringify({ values: [[write.value]] }) } : {}) });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error?.message || `Google Sheets isteği başarısız (${response.status}).`);
   return data.values || [];
@@ -72,9 +72,18 @@ async function sheetRequest(tab, range = 'A1:Z1000', write) {
 function rowsToObjects(rows) {
   if (!rows?.length) return [];
   const headers = rows[0].map(x => String(x || '').trim());
+  const dateColumns = headers.map((key, i) => /^(date|due_date|completed_at|created_at|datetime|timestamp)$/i.test(key) ? i : -1).filter(i => i >= 0);
   return rows.slice(1).map((row, index) => {
     const item = { _row: index + 2 };
-    headers.forEach((key, i) => { if (key) item[key] = row[i] ?? ''; });
+    headers.forEach((key, i) => {
+      if (!key) return;
+      let value = row[i] ?? '';
+      if (dateColumns.includes(i) && typeof value === 'number') {
+        const date = new Date(Date.UTC(1899, 11, 30) + value * 86400000);
+        value = /^(date|due_date)$/i.test(key) ? date.toISOString().slice(0, 10) : date.toISOString();
+      }
+      item[key] = value;
+    });
     return item;
   }).filter(item => Object.keys(item).some(k => k !== '_row' && item[k] !== ''));
 }
