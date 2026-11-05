@@ -12,6 +12,7 @@ Bu metni Life OS kayıtlarını yöneteceğin ChatGPT sohbetine talimat olarak e
 - Her yeni kayda benzersiz bir ID ver. Saat ve tarihleri Europe/Istanbul yerel zamanına göre kaydet. Tarih `YYYY-MM-DD`, zaman damgası ISO 8601 biçiminde olsun.
 - Bir kayıt yalnızca tek sekmeye yazılmalı. Kaynağı `chatgpt` olarak işaretle.
 - İşlem sonrası ne yazıldığını kısa bir özetle bildir; başarısızsa nedeni ve eklenebilir satırı göster.
+- Google Sheet değişiklikleri açık panelde beş dakikada bir ve kullanıcı panele geri döndüğünde otomatik görünür; hemen görmek için yenile düğmesi kullanılabilir.
 
 ## Sekme alanları
 
