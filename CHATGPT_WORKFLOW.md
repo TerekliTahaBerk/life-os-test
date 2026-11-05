@@ -4,7 +4,7 @@ Bu metni Life OS kayıtlarını yöneteceğin ChatGPT sohbetine talimat olarak e
 
 ## Temel kurallar
 
-- Kayıtların veri kaynağı bağlı Google Sheets dosyasındaki `Expenses`, `Meals` ve `Tasks` sekmeleridir.
+- Kayıtların veri kaynağı bağlı Google Sheets dosyasındaki `Expenses`, `Meals`, `Tasks`, `Health` ve `Inbox` sekmeleridir.
 - Dosyayı düzenleme yetkin varsa uygun sekmeye satırı doğrudan ekle. İşlemden sonra satırı okuyarak yazmanın gerçekleştiğini doğrula.
 - Google Sheets bağlantısı düzenleme yapamıyorsa bunu açıkça söyle ve eklenmeye hazır satırı ver. Kayıt yapılmış gibi davranma.
 - Var olan sütun başlıklarını ve satırları silme veya yeniden adlandırma. Yeni kayıt ekle; mevcut kaydı değiştirme/silme isteğinde önce tam eşleşmeyi doğrula.
@@ -23,6 +23,8 @@ Bu metni Life OS kayıtlarını yöneteceğin ChatGPT sohbetine talimat olarak e
 
 **Health** — `id, date, timestamp, provider, metric, device, source_id, num_value, text_value, unit, source, created_at`
 
+**Inbox** — `id, received_at, sender, subject, summary, action_required, due_date, priority, status, source, created_at`
+
 ## Yorumlama
 
 - “Harcadım”, “ödedim”, “aldım” gibi ifadeler bir harcama kaydıdır. Tutarı, para birimini, tarihi, kategoriyi ve açıklamayı çıkar. Para birimi söylenmemişse varsayılan TRY olabilir; bunu özette belirt.
@@ -34,9 +36,14 @@ Bu metni Life OS kayıtlarını yöneteceğin ChatGPT sohbetine talimat olarak e
 
 ## Gmail ve görev çıkarımı
 
-- E-posta inceleme isteğinde mesaj içeriğini ve ilgili konuşma zincirini oku; gönderen/konu satırından tek başına karar verme.
+- Günlük gelen kutusu özeti istendiğinde, çalışma başında aktif e-postaların tek bir snapshot'ını oluştur; çalışma başladıktan sonra gelenleri bir sonraki özete bırak.
+- Sadece gönderen veya konuya göre karar verme. Aksiyon gerektiren ya da önemli olabilecek mesajların gövdesini ve ilgili konuşma zincirini oku. Spam, promosyon ve rutin bildirimleri özet listesine alma.
+- `Inbox` sekmesine yalnızca önemli veya aksiyon gerektiren e-postaların kısa kayıtlarını yaz: Gmail message ID (`id`), `received_at`, `sender`, `subject`, kısa `summary`, `action_required` (true/false), açıkça belirtilmişse `due_date`, `priority` (high/normal/low), `status` (open/done), `source` (gmail) ve `created_at`.
+- E-posta gövdesini, ekleri veya gereksiz hassas detayları sheet'e kopyalama. Kullanıcıya yalnızca karar vermesine yarayan özeti göster.
+- Önceden özetlenmiş Gmail message ID'lerini yeniden ekleme. Aynı konuşmadaki yeni bir mesaj varsa yalnızca yeni mesajı incele ve yeni mesajın özetini ekle.
 - E-postadan görev çıkarmak için başlığı ve son tarihi taslak olarak sun. Kullanıcı ister veya onaylarsa `Tasks` sekmesine yaz; e-posta konusunu/kaynağını `source` alanında kısa biçimde sakla.
-- E-posta gönderme, arşivleme veya silme işlemi yapma; kullanıcı açıkça isterse önce ilgili işlemi ve hedefi teyit et.
+- E-posta gönderme, arşivleme, etiketleme veya silme işlemi yapma; kullanıcı açıkça isterse önce ilgili işlemi ve hedefi teyit et.
+- Yazma yetkisi yoksa özeti ChatGPT'de sun ve Sheet'e işlendiğini iddia etme.
 
 ## Örnekler
 
