@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5f4ee" />
+  <meta name="description" content="Kişisel yaşam kontrol paneli" />
+  <title>Life OS — Günün</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="login-screen" class="login-screen hidden">
+    <div class="login-card">
+      <div class="brand-mark large">L<span>·</span></div>
+      <p class="eyebrow">GOOGLE SHEETS BAĞLANTISI</p>
+      <h1>Verilerin sende kalır.</h1>
+      <p class="muted">Life OS, özel tablonu Google üzerinden doğrudan okur. Veriler başka bir sunucuya gönderilmez.</p>
+      <form id="login-form">
+        <label for="client-id">Google OAuth Client ID</label>
+        <input id="client-id" name="client-id" type="text" autocomplete="off" placeholder="1234567890-abc…apps.googleusercontent.com" required />
+        <p class="connection-help">Google Cloud Console’da web OAuth istemcisi oluştur. Yetkili kaynak olarak <code>https://tereklitahaberk.github.io</code> ekle. <a href="https://github.com/TerekliTahaBerk/life-os-test#github-pages-and-google-sheets" target="_blank" rel="noreferrer">Kurulum adımları ↗</a></p>
+        <p id="login-error" class="error-text hidden"></p>
+        <button class="button primary full" type="submit">Google ile bağlan <span>→</span></button>
+      </form>
+    </div>
+  </div>
+
+  <div class="app-shell" id="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#today" aria-label="Life OS ana sayfa">
+        <span class="brand-mark">L<span>·</span></span>
+        <span class="brand-name">life<span>os</span></span>
+      </a>
+      <div class="space-label">KİŞİSEL ALAN</div>
+      <nav class="nav-list" aria-label="Ana menü">
+        <button class="nav-item active" data-view="today"><span class="nav-icon">⌂</span><span>Bugün</span><span class="nav-chevron">↗</span></button>
+        <button class="nav-item" data-view="health"><span class="nav-icon">◉</span><span>Sağlık</span></button>
+        <button class="nav-item" data-view="food"><span class="nav-icon">◌</span><span>Beslenme</span></button>
+        <button class="nav-item" data-view="spending"><span class="nav-icon">↗</span><span>Harcamalar</span></button>
+        <button class="nav-item" data-view="tasks"><span class="nav-icon">☷</span><span>Görevler</span><span class="nav-count" id="task-count">0</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sync-card">
+          <span class="sync-dot" id="sync-dot"></span>
+          <div><strong id="sync-label">Bağlantılar bekleniyor</strong><small id="sync-time">Kurulum tamamlanınca güncellenir</small></div>
+        </div>
+        <button class="profile-button" id="logout-button">
+          <span class="avatar">TB</span><span class="profile-copy"><strong>Taha Berk</strong><small>Kişisel alan</small></span><span class="profile-more">···</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="icon-button menu-button" id="menu-button" aria-label="Menüyü aç">☰</button>
+        <div class="breadcrumb"><span>Life OS</span><span class="slash">/</span><strong id="breadcrumb-current">Bugün</strong></div>
+        <div class="top-actions"><span class="date-chip" id="date-chip"></span><button class="icon-button" id="refresh-button" title="Yenile" aria-label="Yenile">↻</button></div>
+      </header>
+
+      <div class="page-wrap">
+        <section class="view active" id="view-today">
+          <div class="page-heading"><div><p class="eyebrow" id="greeting">PERŞEMBE, 5 KASIM</p><h1>Günün nasıl<br class="mobile-break" /> gidiyor, Taha?</h1><p class="subtitle">Hayatının farklı parçaları, tek bir sakin yerde.</p></div><button class="button subtle" id="refresh-main"><span>↻</span> Verileri yenile</button></div>
+          <div id="setup-banner" class="setup-banner hidden"><div class="setup-icon">✳</div><div><strong>Henüz veri yok</strong><p>ChatGPT’den harcama, öğün ve görevlerini bu dosyaya ekle. Freddy ölçümlerini de Health sekmesine aktar.</p></div><a href="https://github.com/TerekliTahaBerk/life-os-test/blob/main/CHATGPT_WORKFLOW.md" target="_blank" rel="noreferrer">ChatGPT talimatları ↗</a></div>
+          <div class="overview-grid">
+            <article class="metric-card health-card"><div class="card-top"><span class="card-label">UYKU SKORU</span><span class="card-icon mint">☾</span></div><div class="metric-main"><strong id="sleep-value">—</strong><span id="sleep-unit">/ 100</span></div><div class="metric-foot"><span class="trend-pill neutral" id="sleep-note">Freddy verisi bekleniyor</span><span class="card-period">son gece</span></div><div class="sparkline mint-line"><svg viewBox="0 0 260 50" preserveAspectRatio="none"><path d="M0 39 C18 37 20 21 39 27 S62 43 77 31 S97 17 113 25 S132 35 147 22 S168 26 181 16 S201 23 215 14 S239 17 260 5" /></svg></div></article>
+            <article class="metric-card spending-card"><div class="card-top"><span class="card-label">BUGÜN HARCANAN</span><span class="card-icon lilac">₺</span></div><div class="metric-main"><strong id="spend-value">—</strong></div><div class="metric-foot"><span class="trend-pill neutral" id="spend-note">Kayıt bekleniyor</span><span class="card-period">bugün</span></div><div class="category-bars" id="category-bars"></div></article>
+            <article class="metric-card movement-card"><div class="card-top"><span class="card-label">HAREKET</span><span class="card-icon peach">↗</span></div><div class="metric-main"><strong id="steps-value">—</strong><span>adım</span></div><div class="progress-track"><span id="steps-progress"></span></div><div class="metric-foot"><span class="muted" id="steps-note">Günlük hedefe göre</span><span class="card-period">bugün</span></div></article>
+          </div>
+
+          <div class="section-heading"><div><p class="eyebrow">GÜNLÜK AKIŞ</p><h2>Bugünün özeti</h2></div><span class="live-indicator"><i></i> Canlı görünüm</span></div>
+          <div class="content-grid">
+            <article class="surface day-card"><div class="surface-heading"><div><h3>Bugün</h3><p>Ritmini takip et</p></div><span class="small-date" id="today-date"></span></div><div class="day-progress"><div class="day-progress-head"><span>Günlük hareket</span><strong id="day-step-label">— / 8.000</strong></div><div class="progress-track wide"><span id="day-step-progress"></span></div></div><div class="timeline" id="meal-timeline"><div class="empty-inline">Öğün kayıtların burada görünecek.</div></div><div class="surface-link-row"><span>Beslenme günlüğü</span><button class="text-link" data-goto="food">Tümünü gör <b>→</b></button></div></article>
+            <article class="surface tasks-card"><div class="surface-heading"><div><h3>Önceliklerin</h3><p id="task-subtitle">Bugün için net bir başlangıç</p></div><button class="round-link" data-goto="tasks" aria-label="Görevleri aç">↗</button></div><div class="task-list" id="today-task-list"><div class="empty-inline">Görevlerin burada görünecek.</div></div><div class="surface-link-row"><span id="open-task-total">Açık görevler</span><button class="text-link" data-goto="tasks">Görev listesi <b>→</b></button></div></article>
+          </div>
+
+          <div class="section-heading lower-heading"><div><p class="eyebrow">KISA BAKIŞ</p><h2>Haftanın ritmi</h2></div><span class="muted small-copy">Son 7 gün</span></div>
+          <div class="content-grid lower-grid"><article class="surface chart-card"><div class="surface-heading"><div><h3>Harcama akışı</h3><p>Günlük toplamlar</p></div><span class="chart-total" id="week-spend-total">—</span></div><div class="chart-area" id="spending-chart"><div class="chart-y"><span>₺2k</span><span>₺1k</span><span>₺0</span></div><div class="chart-bars" id="spending-bars"></div></div><div class="chart-legend"><span><i class="legend-dot violet"></i>Harcamalar</span><span id="expense-record-count">Kayıt yok</span></div></article><article class="surface insight-card"><div class="insight-orb">✳</div><p class="eyebrow">KÜÇÜK BİR HATIRLATMA</p><h3>Verini kaydet,<br />örüntüler zamanla belirir.</h3><p>Öğün ve harcamalarını ChatGPT sohbetinden ekle. Burada düzenli bir akış halinde göreceksin.</p><div class="source-tags"><span>ChatGPT</span><span>Google Sheets</span><span>Freddy</span></div></article></div>
+          <footer class="page-footer"><span>Life OS <b>·</b> Kişisel kontrol merkezi</span><span id="footer-update">Veri bekleniyor</span></footer>
+        </section>
+
+        <section class="view" id="view-health"><div class="page-heading"><div><p class="eyebrow">FREDDY · SAĞLIK VE AKTİVİTE</p><h1>Vücudunun<br class="mobile-break" /> ritmi.</h1><p class="subtitle">Saatinden gelen veriler, günlük yaşamınla birlikte.</p></div><span class="source-badge"><i></i> Freddy</span></div><div class="health-summary-grid" id="health-summary-grid"></div><article class="surface table-surface"><div class="surface-heading"><div><h3>Son ölçümler</h3><p>Freddy Personal API’den alınan kayıtlar</p></div><span class="muted small-copy" id="health-window"></span></div><div class="table-wrap"><table><thead><tr><th>ÖLÇÜM</th><th>DEĞER</th><th>KAYNAK</th><th>ZAMAN</th></tr></thead><tbody id="health-table"><tr><td colspan="4" class="empty-table">Freddy verisi bekleniyor.</td></tr></tbody></table></div></article></section>
+
+        <section class="view" id="view-food"><div class="page-heading"><div><p class="eyebrow">BESLENME GÜNLÜĞÜ</p><h1>Masanda<br class="mobile-break" /> neler var?</h1><p class="subtitle">Sohbetten kaydettiğin öğünlerin, gün gün burada.</p></div><span class="source-badge sheet"><i></i> Google Sheets</span></div><div class="food-summary-grid"><article class="surface summary-stat"><span>BUGÜN ÖĞÜN</span><strong id="food-meal-count">0</strong><small>kayıt</small></article><article class="surface summary-stat"><span>TAHMİNİ ENERJİ</span><strong id="food-calories">—</strong><small>kcal · varsa</small></article><article class="surface summary-stat"><span>SON KAYIT</span><strong class="small-stat" id="food-latest">Henüz yok</strong><small>en son öğün</small></article></div><article class="surface table-surface"><div class="surface-heading"><div><h3>Öğün geçmişi</h3><p>Son kayıtlar</p></div><span class="select-like">Son 30 gün⌄</span></div><div class="table-wrap"><table><thead><tr><th>TARİH</th><th>ÖĞÜN</th><th>İÇERİK</th><th>TAHMİNİ BESİN</th></tr></thead><tbody id="food-table"><tr><td colspan="4" class="empty-table">Öğün kayıtların burada görünecek.</td></tr></tbody></table></div></article></section>
+
+        <section class="view" id="view-spending"><div class="page-heading"><div><p class="eyebrow">HARCAMA TAKİBİ</p><h1>Paranın<br class="mobile-break" /> akışı.</h1><p class="subtitle">Günlük harcamalarını ChatGPT’den kaydet, burada takip et.</p></div><span class="source-badge sheet"><i></i> Google Sheets</span></div><div class="spend-summary-grid"><article class="surface summary-stat"><span>BUGÜN</span><strong id="spend-today-total">₺0</strong><small>toplam harcama</small></article><article class="surface summary-stat"><span>BU AY</span><strong id="spend-month-total">₺0</strong><small>toplam harcama</small></article><article class="surface summary-stat"><span>KAYIT</span><strong id="spend-month-count">0</strong><small>bu ay</small></article></div><div class="content-grid spending-detail-grid"><article class="surface table-surface"><div class="surface-heading"><div><h3>Son harcamalar</h3><p>En yeni kayıtlar</p></div><span class="select-like">Tümü⌄</span></div><div class="table-wrap"><table><thead><tr><th>TARİH</th><th>AÇIKLAMA</th><th>KATEGORİ</th><th>TUTAR</th></tr></thead><tbody id="expense-table"><tr><td colspan="4" class="empty-table">Harcama kayıtların burada görünecek.</td></tr></tbody></table></div></article><article class="surface category-card"><div class="surface-heading"><div><h3>Kategoriler</h3><p>Bu ayın dağılımı</p></div></div><div id="category-breakdown" class="category-breakdown"><div class="empty-inline">Kategori dağılımı için kayıt gerekli.</div></div></article></div></section>
+
+        <section class="view" id="view-tasks"><div class="page-heading"><div><p class="eyebrow">GÜNLÜK PLAN</p><h1>Bir sonraki<br class="mobile-break" /> doğru adım.</h1><p class="subtitle">Görevlerini ChatGPT’den ekle; tamamladıklarını buradan işaretle.</p></div><span class="source-badge sheet"><i></i> Google Sheets</span></div><div class="task-summary-grid"><article class="surface summary-stat"><span>AÇIK GÖREV</span><strong id="task-open-count">0</strong><small>tamamlanmayı bekliyor</small></article><article class="surface summary-stat"><span>BUGÜN</span><strong id="task-due-count">0</strong><small>bugün için</small></article><article class="surface summary-stat"><span>TAMAMLANAN</span><strong id="task-done-count">0</strong><small>toplam</small></article></div><article class="surface task-board"><div class="surface-heading"><div><h3>Yapılacaklar</h3><p>Görev durumunu güncellemek için kutucuğa tıkla.</p></div><div class="filter-tabs"><button class="filter-tab active" data-filter="open">Açık</button><button class="filter-tab" data-filter="all">Tümü</button></div></div><div class="full-task-list" id="full-task-list"><div class="empty-inline">Görev listen burada görünecek.</div></div></article></section>
+      </div>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
