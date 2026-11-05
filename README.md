@@ -1,47 +1,42 @@
 # Life OS
 
-A personal dashboard for health, meals, expenses, and tasks. ChatGPT remains the conversation and capture interface; the dashboard does not call an LLM and needs no OpenAI API key.
+Life OS is a personal, static dashboard deployed on GitHub Pages. ChatGPT is the conversation and data-entry interface. The site reads the private Google Sheet directly after you authorize it with Google; it has no backend, no LLM integration, and no OpenAI API costs.
 
-## What is implemented
+## Files created in Google Drive
 
-- Private password-protected dashboard with signed, HTTP-only session cookies.
-- Today overview plus Health, Meals, Expenses, and Tasks views.
-- Server-side Google Sheets reader and Freddy Personal API reader.
-- Task completion from the dashboard, written back to the Tasks sheet.
-- Responsive layout; the UI shows connection/setup states instead of pretending missing data is live.
-- Gmail is intentionally handled in ChatGPT; this app does not request Gmail access or store email content.
-- Copy-ready ChatGPT instructions are in [CHATGPT_WORKFLOW.md](CHATGPT_WORKFLOW.md).
+- [Life OS folder](https://drive.google.com/drive/folders/1LHCuJELH61ChfPhWMvJ9QdBptj4F4ra3)
+- [Life OS Data spreadsheet](https://docs.google.com/spreadsheets/d/1qWuOsOCNY-HiYr8OJ4UGjW2uOqucJRWLerfH-2V7A1E/edit)
 
-## Google Sheet schema
+The workbook has `Expenses`, `Meals`, `Tasks`, `Health`, and `Settings` tabs. It is private in your Drive. The site requests the read-only Google Sheets scope and keeps the access token in memory until the page is closed. Tasks are updated through ChatGPT, not from the site.
 
-Create tabs named exactly `Expenses`, `Meals`, and `Tasks`. The first row in each tab is the header row. Header names are case-insensitive.
+## GitHub Pages and Google Sheets
 
-`Expenses`: `id, date, amount, currency, category, description, payment_method, source, created_at`
+The Pages workflow uploads only the static files in `site/`. It does not publish the repository's documentation or any server code.
 
-`Meals`: `id, datetime, meal_type, foods, portion, notes, calories_estimate, protein_estimate, source, created_at`
+1. In Google Cloud Console, create or select a project and enable the Google Sheets API.
+2. Configure the OAuth consent screen as **External** and add your Google account as a test user while the app is in testing mode.
+3. Create an OAuth Client ID of type **Web application**. Add this authorized JavaScript origin: `https://tereklitahaberk.github.io`. No redirect URI is needed for the Google Identity Services token flow used here.
+4. Open the Life OS Pages site and paste the OAuth Client ID into the connection form. The client ID is public configuration, not a secret. Google issues a short-lived, read-only token directly to your browser after your consent; the site does not save or transmit that token anywhere except the Google Sheets API.
+5. To refresh the dashboard after ChatGPT writes data, use the refresh button. The site reads the `Expenses`, `Meals`, `Tasks`, `Health`, and `Settings` tabs.
 
-`Tasks`: `id, title, status, due_date, priority, project, source, created_at, completed_at`
+GitHub Actions deploys the site when files in `site/` change. The Pages workflow uses `actions/configure-pages`, `actions/upload-pages-artifact`, and `actions/deploy-pages`. The repository is public, so the deployed interface is public; your personal Sheet remains private and requires Google authorization.
 
-Use unique IDs. Dates should be `YYYY-MM-DD`; timestamps should be ISO 8601. Task statuses `open` and `done` are recognized. The panel reads all three tabs. Completing a task from the panel changes its `status` cell, so the Google service account needs Editor access; use Viewer access only if you remove/disable that action.
+## Sheet schema
 
-## Configure integrations
+The first row of each table is the header row. Keep headers unchanged.
 
-1. Create a Google Cloud service account, enable the Google Sheets API, and share the private spreadsheet with the service account email. Do not publish the sheet to the web.
-2. In Freddy, create a Personal API key under AI apps → API keys. The key is read-only and should remain a server-side secret.
-3. Set the variables in `.env.example` in your deployment environment. For `GOOGLE_PRIVATE_KEY`, paste the service account private key; Vercel supports multiline values. If entering escaped newlines, use `\\n`.
-4. Deploy this repository to Vercel with the project root as the root directory. Set `DASHBOARD_PASSWORD`, a long random `SESSION_SECRET`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `GOOGLE_SHEET_ID`, and `FREDDY_API_KEY`. Redeploy after changing environment variables.
-5. Visit the deployment over HTTPS and sign in.
+- `Expenses`: `id, date, amount, currency, category, description, payment_method, source, created_at`
+- `Meals`: `id, datetime, meal_type, foods, portion, notes, calories_estimate, protein_estimate, source, created_at`
+- `Tasks`: `id, title, status, due_date, priority, project, source, created_at, completed_at`
+- `Health`: `id, date, timestamp, provider, metric, device, source_id, num_value, text_value, unit, source, created_at`
+- `Settings`: `setting, value, notes`
 
-The Freddy key is sent only from the server to `https://freddy.coach/api/v1/metrics`. The dashboard requests the most recent 30 days (subject to Freddy's plan history window). API credentials are never exposed in browser JavaScript.
+See [CHATGPT_WORKFLOW.md](CHATGPT_WORKFLOW.md) for copy-ready instructions to record expenses, meals, tasks, and Freddy measurements through ChatGPT.
 
-## Local preview
+## Privacy and boundaries
 
-Serve the repository root with any static web server to preview the interface. API-backed sign-in and data will need a Vercel-compatible functions runtime and the environment variables above.
-
-## Current boundaries
-
-- No AI chat or OpenAI API calls are part of the web app.
-- ChatGPT is the data-entry and email-review interface. Google Sheets is the initial source of truth.
-- Health data is read-only through Freddy's API.
-- Gmail content is not ingested into this application.
-- Google Sheets and Freddy credentials are required for live data; without them the dashboard shows setup/error states.
+- No Google service account, Freddy API key, or other secret is committed to GitHub.
+- The site never calls Freddy directly. Use Freddy in ChatGPT, then save only the desired measurements into the private `Health` tab. This avoids exposing a Freddy API key in a static site.
+- The Google OAuth scope is read-only. ChatGPT is used to add and update rows.
+- GitHub Pages serves the dashboard publicly. It contains no personal records. The underlying Google Sheet remains private.
+- If Google OAuth is left in testing mode, only accounts listed as test users can connect.

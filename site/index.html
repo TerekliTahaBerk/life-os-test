@@ -9,20 +9,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="login-screen" class="login-screen hidden">
     <div class="login-card">
       <div class="brand-mark large">L<span>·</span></div>
-      <p class="eyebrow">KİŞİSEL KONTROL MERKEZİ</p>
-      <h1>Tekrar hoş geldin.</h1>
-      <p class="muted">Paneline erişmek için parolanı gir.</p>
+      <p class="eyebrow">GOOGLE SHEETS BAĞLANTISI</p>
+      <h1>Verilerin sende kalır.</h1>
+      <p class="muted">Life OS, özel tablonu Google üzerinden doğrudan okur. Veriler başka bir sunucuya gönderilmez.</p>
       <form id="login-form">
-        <label for="password">Panel parolası</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" required />
+        <label for="client-id">Google OAuth Client ID</label>
+        <input id="client-id" name="client-id" type="text" autocomplete="off" placeholder="1234567890-abc…apps.googleusercontent.com" required />
+        <p class="connection-help">Google Cloud Console’da web OAuth istemcisi oluştur. Yetkili kaynak olarak <code>https://tereklitahaberk.github.io</code> ekle. <a href="https://github.com/TerekliTahaBerk/life-os-test#github-pages-and-google-sheets" target="_blank" rel="noreferrer">Kurulum adımları ↗</a></p>
         <p id="login-error" class="error-text hidden"></p>
-        <button class="button primary full" type="submit">Panele gir <span>→</span></button>
+        <button class="button primary full" type="submit">Google ile bağlan <span>→</span></button>
       </form>
     </div>
   </div>
@@ -62,7 +63,7 @@
       <div class="page-wrap">
         <section class="view active" id="view-today">
           <div class="page-heading"><div><p class="eyebrow" id="greeting">PERŞEMBE, 5 KASIM</p><h1>Günün nasıl<br class="mobile-break" /> gidiyor, Taha?</h1><p class="subtitle">Hayatının farklı parçaları, tek bir sakin yerde.</p></div><button class="button subtle" id="refresh-main"><span>↻</span> Verileri yenile</button></div>
-          <div id="setup-banner" class="setup-banner hidden"><div class="setup-icon">✳</div><div><strong>Paneli bağlamaya hazırız</strong><p>Veriler görünmeden önce Google Sheets ve Freddy bağlantılarını sunucu ortam değişkenleriyle tamamla.</p></div><a href="/README.md" target="_blank">Kurulum rehberi ↗</a></div>
+          <div id="setup-banner" class="setup-banner hidden"><div class="setup-icon">✳</div><div><strong>Henüz veri yok</strong><p>ChatGPT’den harcama, öğün ve görevlerini bu dosyaya ekle. Freddy ölçümlerini de Health sekmesine aktar.</p></div><a href="https://github.com/TerekliTahaBerk/life-os-test/blob/main/CHATGPT_WORKFLOW.md" target="_blank" rel="noreferrer">ChatGPT talimatları ↗</a></div>
           <div class="overview-grid">
             <article class="metric-card health-card"><div class="card-top"><span class="card-label">UYKU SKORU</span><span class="card-icon mint">☾</span></div><div class="metric-main"><strong id="sleep-value">—</strong><span id="sleep-unit">/ 100</span></div><div class="metric-foot"><span class="trend-pill neutral" id="sleep-note">Freddy verisi bekleniyor</span><span class="card-period">son gece</span></div><div class="sparkline mint-line"><svg viewBox="0 0 260 50" preserveAspectRatio="none"><path d="M0 39 C18 37 20 21 39 27 S62 43 77 31 S97 17 113 25 S132 35 147 22 S168 26 181 16 S201 23 215 14 S239 17 260 5" /></svg></div></article>
             <article class="metric-card spending-card"><div class="card-top"><span class="card-label">BUGÜN HARCANAN</span><span class="card-icon lilac">₺</span></div><div class="metric-main"><strong id="spend-value">—</strong></div><div class="metric-foot"><span class="trend-pill neutral" id="spend-note">Kayıt bekleniyor</span><span class="card-period">bugün</span></div><div class="category-bars" id="category-bars"></div></article>
@@ -91,6 +92,8 @@
     </main>
   </div>
   <div class="toast" id="toast" role="status"></div>
-  <script src="/app.js" defer></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
