@@ -10,6 +10,7 @@ A personal dashboard for health, meals, expenses, and tasks. ChatGPT remains the
 - Task completion from the dashboard, written back to the Tasks sheet.
 - Responsive layout; the UI shows connection/setup states instead of pretending missing data is live.
 - Gmail is intentionally handled in ChatGPT; this app does not request Gmail access or store email content.
+- Copy-ready ChatGPT instructions are in [CHATGPT_WORKFLOW.md](CHATGPT_WORKFLOW.md).
 
 ## Google Sheet schema
 
@@ -22,8 +23,6 @@ Create tabs named exactly `Expenses`, `Meals`, and `Tasks`. The first row in eac
 `Tasks`: `id, title, status, due_date, priority, project, source, created_at, completed_at`
 
 Use unique IDs. Dates should be `YYYY-MM-DD`; timestamps should be ISO 8601. Task statuses `open` and `done` are recognized. The panel reads all three tabs. Completing a task from the panel changes its `status` cell, so the Google service account needs Editor access; use Viewer access only if you remove/disable that action.
-
-Example ChatGPT entry instructions: add the expense, meal, or task as a new row in the matching tab; preserve the headers and existing rows; use a unique ID; do not claim a write succeeded unless the connected Sheets action confirms it.
 
 ## Configure integrations
 
