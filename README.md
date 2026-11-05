@@ -17,7 +17,7 @@ The Pages workflow uploads only the static files in `site/`. It does not publish
 2. The OAuth consent screen is configured as **External** in testing mode; add each Google account that will use the dashboard as a test user.
 3. Create an OAuth Client ID of type **Web application**. Add the authorized JavaScript origins `https://www.tahaberk.com` and `https://tereklitahaberk.github.io`. Origins contain no path. No redirect URI is needed for the Google Identity Services token flow used here.
 4. Copy the client ID into `site/config.js` as `googleClientId`. It is public configuration, not a secret. After deployment, users click **Google ile bağlan** and grant read-only Sheet access. The site holds the short-lived token in memory and sends it only to the Google Sheets API.
-5. Use the refresh button after ChatGPT updates the sheet. The site reads the `Expenses`, `Meals`, `Tasks`, `Health`, `Settings`, and `Inbox` tabs.
+5. While the dashboard is open, it refreshes the `Expenses`, `Meals`, `Tasks`, `Health`, `Settings`, and `Inbox` tabs every five minutes and when you return to the browser tab. Use the refresh button for an immediate update.
 
 GitHub Pages publishes the `docs/` directory from the `main` branch. The `site/` directory is kept in sync with the published copy. The repository is public, so the interface is public; your personal Sheet remains private and requires Google authorization.
 
